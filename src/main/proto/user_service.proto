@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package com.example.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+option java_outer_classname = "UserServiceProto";
+
+// User message definition
+message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  int32 age = 4;
+  string department = 5;
+  UserStatus status = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+// User status enum
+enum UserStatus {
+  ACTIVE = 0;
+  INACTIVE = 1;
+  SUSPENDED = 2;
+}
+
+// Request messages
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  int32 age = 3;
+  string department = 4;
+}
+
+message GetUserRequest {
+  int32 id = 1;
+}
+
+message UpdateUserRequest {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  int32 age = 4;
+  string department = 5;
+  UserStatus status = 6;
+}
+
+message DeleteUserRequest {
+  int32 id = 1;
+}
+
+message ListUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string department = 3; // Optional filter
+}
+
+// Response messages
+message CreateUserResponse {
+  User user = 1;
+  string message = 2;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+  string message = 2;
+}
+
+message DeleteUserResponse {
+  string message = 1;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// Service definition
+service UserService {
+  // Unary RPC - Single request, single response
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  
+  // Server streaming RPC - Single request, multiple responses
+  rpc ListUsers(ListUsersRequest) returns (stream User);
+  
+  // Client streaming RPC - Multiple requests, single response
+  rpc CreateMultipleUsers(stream CreateUserRequest) returns (CreateUserResponse);
+  
+  // Bidirectional streaming RPC - Multiple requests, multiple responses
+  rpc ChatWithUsers(stream GetUserRequest) returns (stream GetUserResponse);
+}
